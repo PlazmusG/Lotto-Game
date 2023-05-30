@@ -1,0 +1,241 @@
+import pygame, random
+pygame.init()
+from pygame.locals import *
+
+clock = pygame.time.Clock()
+player_nums = ['','','','','','']
+computer_nums = ['','','','','','']
+
+money = 20
+
+#Fonts
+titleFont = pygame.font.SysFont("Times new roman", 50)
+minionProSemiBold = pygame.font.SysFont("minionprosemibold",30)
+
+#Rules Screen
+def rules_screen():
+    screen = pygame.display.set_mode((400,300))
+    pygame.display.set_caption("Mowat Lotto")
+    screen.fill("Blue")
+
+    #Render your text
+    title = titleFont.render('Mowat Lotto', False, "Yellow")
+    txt1 = minionProSemiBold.render('Input a number between 0 and 49', False, "Yellow")
+    txt2 = minionProSemiBold.render('You cannot repeat numbers', False, "Yellow")
+    txt3 = minionProSemiBold.render('Have fun!', False, "Yellow")
+
+    #Write the text to the screen
+    screen.blit(title, (40,25))
+    screen.blit(txt1, (40,75))
+    screen.blit(txt2, (40,125))
+    screen.blit(txt3, (40,175))
+    #Display the screen
+    pygame.display.flip()
+
+    #press any key to continue
+    pygame.event.clear()
+    event = pygame.event.wait()
+    while event.type != KEYDOWN:
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            pygame.quit()
+            quit()
+
+def duplicate(index):
+    for i in range(index):
+        if player_nums[i] == player_nums[index]:
+            dupeNum = minionProSemiBold.render('Cannot use a duplicate number', False, "Yellow")
+            screen.blit(dupeNum,(150,300))
+            pygame.display.flip()
+            pygame.time.wait(50)
+            pygame.draw.rect(screen, "Pink", pygame.Rect(150, 300, 300, 320))
+            pygame.display.flip
+            return True
+
+#This function grabs the number pressed on the keyboard and inputs it on to the screen
+def user_lotto_number(index, screen):
+    global player_nums
+
+    #Stay in loop as player completes number
+    #only stop when enter is press and is greater than 0 and less than 49 and its not duplicate or a string
+    keys = pygame.key.get_pressed()
+    while not (keys[pygame.K_RETURN] and player_nums[index] != "" and not duplicate(index) and int(player_nums[index])<=49 and int(player_nums[index])>=1):
+        events = pygame.event.get()
+
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                keys=pygame.key.get_pressed()
+
+                #makes a number corrections
+                if keys[pygame.K_BACKSPACE]:
+                    player_nums[index] = player_nums[index][0:len(player_nums[index])-1] 
+                    pygame.draw.rect(screen, "Pink", pygame.Rect(50, 200, 400, 50))
+                if keys[pygame.K_RETURN]:
+                    pygame.draw.rect(screen, "pink", pygame.Rect(50, 200, 400, 50))
+                if len(player_nums[index]) < 2:
+                    if keys[pygame.K_0]:
+                        player_nums[index] += "0"
+                    elif keys[pygame.K_1]: 
+                        player_nums[index] += '1'
+                    elif keys[pygame.K_2]: 
+                        player_nums[index] += '2'
+                    elif keys[pygame.K_3]: 
+                        player_nums[index] += '3'
+                    elif keys[pygame.K_4]: 
+                        player_nums[index] += '4'
+                    elif keys[pygame.K_5]: 
+                        player_nums[index] += '5'
+                    elif keys[pygame.K_6]: 
+                        player_nums[index] += '6'
+                    elif keys[pygame.K_7]: 
+                        player_nums[index] += '7'
+                    elif keys[pygame.K_8]: 
+                        player_nums[index] += '8'
+                    elif keys[pygame.K_9]: 
+                        player_nums[index] += '9'
+                            
+            
+        pygame.draw.rect(screen, 'peachpuff', pygame.Rect(index*100+25,50,50,50))
+        number = minionProSemiBold.render(player_nums[index], False, "Blue")
+        screen.blit(number, (index*100+30,55))
+        pygame.display.flip()
+    
+
+#User lotto picks function
+def user_lotto_picks(screen):
+    entry_title = minionProSemiBold.render('Your lotto picks:', False, "Yellow")
+    screen.blit(entry_title, (25,5))
+
+    #Draws pink boxes for user input
+    for num in range(1,7):
+        pygame.draw.rect(screen, "Cyan", pygame.Rect(num*100-75,50,50,50))
+        pygame.time.wait(150)
+        pygame.display.flip()
+    
+    #Users pick their numbers
+    for count in range(0,6):
+        user_lotto_number(count, screen)
+
+#Draws boxes on screen for random computer generated numbers
+def random_lotto_numbers(screen):
+    global computer_nums
+    rand_num_titles = minionProSemiBold.render('Lotto numbers:', False, "Yellow")
+    screen.blit(rand_num_titles,(25,150))
+    for num in range(1,7):
+        pygame.draw.rect(screen, "Cyan", pygame.Rect(num*100-75,195,50,50))
+        pygame.time.wait(150)
+        pygame.display.flip()
+
+    #first rNum
+    computer_nums[0] = str(random.randint(1,49))
+    #second rNum
+    computer_nums[1] = str(random.randint(1,49))
+    while computer_nums[1] == computer_nums[0]:
+        computer_nums[1] = str(random.randint(1,49))
+    #third rNum
+    computer_nums[2] = str(random.randint(1,49))
+    while computer_nums[2] == computer_nums[1] or computer_nums[0] == computer_nums[2]:
+        computer_nums[2] = str(random.randint(1,49))
+        
+    #fourth rNum
+    computer_nums[3] = str(random.randint(1,49))
+    while computer_nums[3] == computer_nums[2] or computer_nums[1] == computer_nums[3] or computer_nums[0] == computer_nums[3]:
+        computer_nums[3] = str(random.randint(1,49))
+    #fifth rNum
+    computer_nums[4] = str(random.randint(1,49))
+    while computer_nums[4] == computer_nums[3] or computer_nums[4] == computer_nums[2] or computer_nums[4] == computer_nums[1] or computer_nums[4] == computer_nums[0]:
+        computer_nums[4] = str(random.randint(1,49))
+    #sixth rNum
+    computer_nums[5] = str(random.randint(1,49))
+    while computer_nums[5] == computer_nums[4] or computer_nums[5] == computer_nums[3] or computer_nums[5] == computer_nums[2] or computer_nums[5] == computer_nums[1] or computer_nums[5] == computer_nums[0]:
+        computer_nums[5] = str(random.randint(1,49))
+
+    
+    for count in range(0,6):
+        number = minionProSemiBold.render(computer_nums[count], False, "Blue")
+        screen.blit(number,(count*100+30,200))
+            
+    pygame.display.flip()
+
+#Play again function
+def play_again():
+    pygame.event.clear()
+    event = pygame.event.wait()
+    while event.type != KEYDOWN:
+        event = pygame.event.wait()
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_n]:
+        return'n'
+    if keys[pygame.K_y]:
+        return'y'
+
+#Count the number of matches function
+def count_matches():
+    num_matches = 0
+    if player_nums[0] == computer_nums[0]:
+        num_matches += 1
+    if player_nums[1] == computer_nums[1]:
+        num_matches += 1
+    if player_nums[2] == computer_nums[2]:
+        num_matches += 1
+    if player_nums[3] == computer_nums[3]:
+        num_matches += 1
+    if player_nums[4] == computer_nums[4]:
+        num_matches += 1
+    if player_nums[5] == computer_nums[5]:
+        num_matches += 1
+    return num_matches
+
+#Results message
+def results(screen,money):
+    num_matches = count_matches()
+    money = money + num_matches
+    if num_matches == 6:
+        money = money + 100000
+    matchesMsg = minionProSemiBold.render('Matches with '+str(num_matches)+' numbers', False, "Yellow")
+    bankMsg = minionProSemiBold.render('You currently have${0:.2f}.'.format(money), False, "Yellow")
+    playAgain = minionProSemiBold.render('Would you like to play again? (y/n)', False, "Yellow")
+    screen.blit(matchesMsg, (25,290))
+    screen.blit(bankMsg, (25,320))
+    screen.blit(playAgain, (25,350))
+    pygame.display.flip()
+    return num_matches
+
+#Start the lotto game
+rules_screen()
+
+#Game Screen
+screen = pygame.display.set_mode((600,400))
+play = "y"
+money = 20.00
+
+#Game loop
+
+while play == "y" and money >= 1.50:
+    #sets a new game
+    money -= 1.50
+    player_nums = ['','','','','','']
+    computer_nums = ['','','','','','']
+
+
+
+    #change to a pink screen
+    screen.fill("Pink")
+    pygame.display.flip()
+
+    #pygame.quit means that the user clicked on the X to close the window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+    #Calling functions
+    user_lotto_picks(screen)
+    random_lotto_numbers(screen)
+    money = results(screen, money)+money
+    play = play_again()
